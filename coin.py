@@ -13,13 +13,13 @@ def coin(n):
             count = 0
     return max_count
 
-# 测试1000次，每次抛1000次硬币
+# 测试1000次，每次抛10000次硬币
 # 统计每次的值，并且统计这个值出现的次数
 # 输出最多连续出现的正面次数及其出现次数
 def test():
     d = {}
     for i in range(1000):
-        n = coin(1000)
+        n = coin(10000)
         if n in d:
             d[n] += 1
         else:

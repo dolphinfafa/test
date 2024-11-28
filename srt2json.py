@@ -1,10 +1,7 @@
 import re
 import json
 
-srt_file = 'diss.srt'
-json_file = 'diss.json'
-
-def srt_to_json(srt_file):
+def srt_to_json(srt_file, json_file):
     with open(srt_file, 'r', encoding='utf-8') as file:
         srt_data = file.read()
 
@@ -22,34 +19,38 @@ def srt_to_json(srt_file):
             'text': match[3]
         }
         subtitles.append(subtitle)
+    json_data = json.dumps(subtitles, ensure_ascii=False)
+
+#   json_data里的'text'字段分成两个字段
+#   如果'text'字段的内容是'名字 内容'的形式
+#   最后一个空格前的内容存入'name'字段
+#   最后一个空格后的内容存入'content'字段
+#   如果'text'字段的内容不是'名字 内容'的形式
+#   则删除这条记录
+    subtitles = json.loads(json_data)
+    for subtitle in subtitles:
+        text = subtitle['text']
+        if ' ' in text:
+            name, content = text.rsplit(' ', 1)
+            subtitle['name'] = name
+            subtitle['content'] = content
+        else:
+            subtitles.remove(subtitle)
 
     json_data = json.dumps(subtitles, ensure_ascii=False)
 
-    return json_data
+    # 将JSON数据写入文件
+    with open(json_file, 'w', encoding='utf-8') as file:
+        file.write(json_data)
 
-# 调用函数将SRT转换为JSON
-json_data = srt_to_json(srt_file)
-
-# json_data里的'text'字段分成两个字段
-# 如果'text'字段的内容是'名字 内容'的形式
-# 最后一个空格前的内容存入'name'字段
-# 最后一个空格后的内容存入'content'字段
-# 如果'text'字段的内容不是'名字 内容'的形式
-# 则删除这条记录
-# def split_text(json_data):
-#     subtitles = json.loads(json_data)
-#     for subtitle in subtitles:
-#         text = subtitle['text']
-#         if ' ' in text:
-#             name, content = text.rsplit(' ', 1)
-#             subtitle['name'] = name
-#             subtitle['content'] = content
-#         else:
-#             subtitles.remove(subtitle)
-#     return json.dumps(subtitles, ensure_ascii=False)
-
-# json_data = split_text(json_data)
-
-# 将转换后的JSON数据写入文件
-with open(json_file, 'w', encoding='utf-8') as file:
-    file.write(json_data)
+if __name__ == '__main__':
+    # 连续调用srt_to_json函数，
+    srts = [
+        '5-1.srt', 
+        '5-2.srt', 
+        ]
+    for i, srt in enumerate(srts):
+        # json文件名为srt[i].json
+        json_file = srt.split('.')[0] + '.json'
+        srt_to_json(srt, json_file)
+        print('Convert {} to {}'.format(srt, json_file))

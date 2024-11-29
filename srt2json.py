@@ -46,8 +46,10 @@ def srt_to_json(srt_file, json_file):
 if __name__ == '__main__':
     # 连续调用srt_to_json函数，
     srts = [
-        '5-1.srt', 
-        '5-2.srt', 
+        '3-1.srt', 
+        '3-2.srt', 
+        '4-1.srt', 
+        '4-2.srt',
         ]
     for i, srt in enumerate(srts):
         # json文件名为srt[i].json
